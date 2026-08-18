@@ -1,0 +1,19 @@
+{
+  "common": {
+    "telegramBot": "ربات سفارشگیر تلگرام",
+    "buyNow": "خرید",
+    "demo": "دمو رایگان",
+    "planBase": "پایه",
+    "planPro": "حرفه‌ای",
+    "planOrg": "سازمانی",
+    "price": "قیمت",
+    "features": "امکانات",
+    "faq": "سوالات متداول"
+  },
+  "productPage": {
+    "title": "مشخصات محصول",
+    "featuresTitle": "امکانات",
+    "priceTitle": "انتخاب پلن",
+    "ctaTitle": "همین حالا شروع کنید"
+  }
+}

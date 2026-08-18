@@ -1,0 +1,55 @@
+# ------------ Dependencies ------------
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ------------ Testing ------------
+/coverage
+
+# ------------ Next.js ------------
+/.next/
+/out/
+
+# ------------ Production build (if you use custom build) ------------
+/build
+
+# ------------ Misc ------------
+.DS_Store
+*.pem
+
+# ------------ Debug logs ------------
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ------------ Environment variables ------------
+# Never commit real env files
+.env*
+# Except an example file without real secrets (optional)
+!.env.example
+
+# ------------ Vercel ------------
+.vercel
+
+# ------------ TypeScript ------------
+*.tsbuildinfo
+next-env.d.ts
+
+# ------------ Prisma ------------
+# Generated Prisma client (you only commit schema & migrations)
+/lib/generated/prisma
+prisma/*.db
+prisma/*.db-journal
+
+# ------------ IDE / Editor (optional but recommended) ------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
