@@ -1,66 +1,126 @@
-'use client'
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { prisma } from '@/lib/prisma'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { motion } from 'framer-motion'
+import { ArrowLeft, CheckCircle2, Sparkles } from 'lucide-react'
 
-const products = [
-  { id: 1, slug: 'rabot-sarkhor-gir', title: 'ربات سفارشگیر تلگرام', price: 2000000, shortDesc: 'ثبت سفارش خودکار', image: '/images/robot-telegram.jpg', status: 'active' },
-  { id: 2, slug: 'automate-adaf', title: 'اتوماسیون اداری', price: 0, shortDesc: 'به زودی', image: '/images/automation-admin.jpg', status: 'coming-soon' },
-]
+export const metadata = {
+  title: 'محصولات | فروشگاه محصولات دیجیتال',
+  description: 'ربات تلگرام، اتوماسیون اداری، مشاوره AI و طراحی سایت',
+}
 
-export default function ProductsPage() {
-  const [search, setSearch] = useState('')
-  const [category, setCategory] = useState('all')
+export default async function ProductsPage() {
+  const products = await prisma.product.findMany({
+    where: {
+      status: { in: ['active', 'coming-soon'] }
+    },
+    orderBy: { createdAt: 'desc' }
+  })
 
-  const filtered = products.filter(p => 
-    p.title.toLowerCase().includes(search.toLowerCase()) &&
-    (category === 'all' || p.status === category)
-  )
+  const formatPrice = (price: number) => {
+    if (price === 0) return 'رایگان'
+    return price.toLocaleString('fa-IR') + ' تومان'
+  }
 
   return (
-    <div className="min-h-screen bg-background p-8">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 py-12 px-4">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8">همه محصولات</h1>
-
-        {/* فیلتر */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <Input placeholder="جستجو در محصولات..." value={search} onChange={e => setSearch(e.target.value)} className="max-w-md" />
-          <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="دسته‌بندی" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">همه</SelectItem>
-              <SelectItem value="active">فعال</SelectItem>
-              <SelectItem value="coming-soon">به زودی</SelectItem>
-            </SelectContent>
-          </Select>
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-l from-primary to-blue-600 bg-clip-text text-transparent">
+            همه محصولات
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            محصولات دیجیتال با کیفیت برای رشد کسب‌وکار شما
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {filtered.map((product, i) => (
-            <motion.div key={product.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-              <Card>
-                <CardHeader>
-                  <img src={product.image} alt={product.title} className="w-full h-48 object-cover rounded-t-xl" />
-                  <CardTitle className="mt-4">{product.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">{product.shortDesc}</p>
-                  <Badge>{product.status}</Badge>
-                  <Button asChild className="w-full mt-6">
-                    <Link href={`/products/${product.slug}`}>جزئیات + خرید</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+        {/* Products Grid */}
+        {products.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {products.map((product) => {
+              const features = JSON.parse(product.features as string)
+              const isComingSoon = product.status === 'coming-soon'
+              
+              return (
+                <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden">
+                  <div className="relative">
+                    {product.imageUrl ? (
+                      <img 
+                        src={product.imageUrl} 
+                        alt={product.title}
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-48 bg-gradient-to-br from-primary/20 to-blue-600/20 flex items-center justify-center">
+                        <Sparkles className="w-16 h-16 text-primary/40" />
+                      </div>
+                    )}
+                    
+                    {/* Status Badge */}
+                    <div className="absolute top-4 right-4">
+                      {isComingSoon ? (
+                        <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                          به زودی
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-green-100 text-green-800">
+                          فعال
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  <CardContent className="p-6">
+                    <h2 className="text-xl font-bold mb-2">{product.title}</h2>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                      {product.shortDesc}
+                    </p>
+
+                    {/* Features Preview */}
+                    <div className="space-y-2 mb-4">
+                      {features.slice(0, 3).map((feature: string, index: number) => (
+                        <div key={index} className="flex items-center gap-2 text-sm">
+                          <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                          <span className="text-muted-foreground">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Price */}
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <p className="text-sm text-muted-foreground">شروع قیمت از</p>
+                        <p className="text-2xl font-bold text-primary">
+                          {formatPrice(product.priceBase)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* CTA */}
+                    <Button 
+                      asChild 
+                      className="w-full"
+                      variant={isComingSoon ? 'outline' : 'default'}
+                      disabled={isComingSoon}
+                    >
+                      <Link href={`/products/${product.slug}`}>
+                        {isComingSoon ? 'به زودی' : 'مشاهده و خرید'}
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <p className="text-2xl text-muted-foreground">محصولی یافت نشد</p>
+            <p className="mt-2">لطفاً بعداً مراجعه کنید</p>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -1,75 +1,78 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
-import { motion } from 'framer-motion'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel'
+import { Star } from 'lucide-react'
 
-export default function TestimonialCarousel() {
-  const [mounted, setMounted] = useState(false)
+interface Testimonial {
+  id: string
+  name: string
+  role: string
+  content: string
+  avatar?: string | null
+}
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+interface TestimonialCarouselProps {
+  testimonials: Testimonial[]
+}
 
-  const testimonials = [
-    {
-      name: 'مهدی رضایی',
-      role: 'صاحب فروشگاه آنلاین',
-      content: 'ربات سفارشگیر تلگرام از روز اول زندگی فروش من را تغییر داد. دیگر هیچ سفارشی گم نمی‌شود!',
-      avatar: 'https://picsum.photos/id/64/150/150',
-    },
-    {
-      name: 'سارا احمدی',
-      role: 'تاجر آنلاین',
-      content: 'قیمت مناسب + پشتیبانی عالی + راه‌اندازی در ۴۸ ساعت. بهترین تصمیم زندگی من بود.',
-      avatar: 'https://picsum.photos/id/91/150/150',
-    },
-    {
-      name: 'حسن کریمی',
-      role: 'تاجر لوازم یدکی',
-      content: 'ربات سفارشگیر + CRM در یک جا. درآمدم ۳ برابر شد!',
-      avatar: 'https://picsum.photos/id/201/150/150',
-    },
-  ]
-
+export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   return (
-    <div className="py-16">
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold">نظرات مشتریان ما</h2>
-        <p className="text-muted-foreground mt-3">صدها کسب‌وکار با ما فروششان را ۵ برابر کرده‌اند</p>
-      </div>
-
-      <Carousel className="max-w-5xl mx-auto">
-        <CarouselContent>
-          {testimonials.map((testimonial, index) => (
-            <CarouselItem key={index}>
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
-                viewport={{ once: true }}
-              >
-                <Card className="bg-card border border-border">
-                  <CardHeader>
-                    <Avatar>
-                      <AvatarImage src={testimonial.avatar} />
-                      <AvatarFallback>{testimonial.name[0]}</AvatarFallback>
+    <section className="py-20 px-6 bg-white">
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-gray-900">
+          نظرات مشتریان
+        </h2>
+        <p className="text-center text-gray-600 mb-12">مشتریان ما چه می‌گویند؟</p>
+        
+        <Carousel
+          opts={{
+            align: 'start',
+            loop: true,
+          }}
+          className="w-full"
+        >
+          <CarouselContent>
+            {testimonials.map((testimonial) => (
+              <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/3">
+                <div className="card-elegant p-6 h-full">
+                  <div className="flex items-center gap-1 mb-4">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  
+                  <p className="text-gray-700 leading-relaxed mb-6 text-sm">
+                    "{testimonial.content}"
+                  </p>
+                  
+                  <div className="flex items-center gap-4">
+                    <Avatar className="w-12 h-12">
+                      <AvatarImage src={testimonial.avatar || ''} />
+                      <AvatarFallback className="bg-teal-700 text-white">
+                        {testimonial.name.charAt(0)}
+                      </AvatarFallback>
                     </Avatar>
-                    <CardTitle className="mt-4">{testimonial.name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-lg italic leading-relaxed">“{testimonial.content}”</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>
-    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-900">{testimonial.name}</h3>
+                      <p className="text-sm text-gray-600">{testimonial.role}</p>
+                    </div>
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="bg-white border-gray-200 text-gray-700" />
+          <CarouselNext className="bg-white border-gray-200 text-gray-700" />
+        </Carousel>
+      </div>
+    </section>
   )
 }

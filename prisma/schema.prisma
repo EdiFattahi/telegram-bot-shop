@@ -5,3 +5,78 @@ generator client {
 datasource db {
   provider = "sqlite"
 }
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  shortDesc   String
+  priceBase   Int
+  pricePro    Int
+  priceOrg    Int
+  features    String   // JSON stringify
+  demoUrl     String?
+  imageUrl    String?
+  status      String   @default("active")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  orders      Order[]
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  content   String
+  avatar    String?
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id         String   @id @default(cuid())
+  userId     String?
+  productId  String
+  plan       String
+  amount     Int
+  status     String   @default("pending")
+  telegramId String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User?    @relation(fields: [userId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id])
+}
+
+model BlogPost {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  content   String
+  excerpt   String
+  coverImage String?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
+
+enum Role {
+  USER
+  ADMIN
+}
