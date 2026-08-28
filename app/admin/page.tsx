@@ -6,8 +6,8 @@ export default async function AdminDashboard() {
   let totalProducts = 0
   let totalOrders = 0
   let totalUsers = 0
-  let recentOrders = []
-
+  let recentOrders: any[] = []
+  
   try {
     const [products, orders, users, recent] = await Promise.all([
       prisma.product.count(),

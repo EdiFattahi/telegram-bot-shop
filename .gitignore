@@ -42,10 +42,12 @@ yarn-error.log*
 next-env.d.ts
 
 # ------------ Prisma ------------
-# Generated Prisma client (you only commit schema & migrations)
+# Generated Prisma client
 /lib/generated/prisma
-prisma/*.db
-prisma/*.db-journal
+
+# Legacy SQLite database files
+*.db
+*.db-journal
 
 # ------------ IDE / Editor (optional but recommended) ------------
 .idea/
