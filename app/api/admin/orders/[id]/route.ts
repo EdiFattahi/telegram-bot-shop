@@ -1,71 +1,112 @@
 import { NextResponse } from 'next/server'
+
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
 
-export async function PUT(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
+const MAX_ORDER_ID_LENGTH = 100
+
+function isValidOrderId(
+  value: unknown
+): value is string {
+  return (
+    typeof value === 'string' &&
+    value.trim().length > 0 &&
+    value.trim().length <= MAX_ORDER_ID_LENGTH
+  )
+}
+
+async function requireAdmin(): Promise<boolean> {
+  const user = await getCurrentUser()
+
+  return user?.role === 'ADMIN'
+}
+
+export async function GET(
+  _req: Request,
+  {
+    params,
+  }: {
+    params: Promise<{ id: string }>
+  }
 ) {
   try {
-    const user = await getCurrentUser()
-    if (!user || user.role !== 'ADMIN') {
+    if (!(await requireAdmin())) {
       return NextResponse.json(
-        { error: 'دسترسی غیرمجاز' },
+        {
+          error: 'دسترسی غیرمجاز',
+        },
         { status: 401 }
       )
     }
 
     const { id } = await params
-    const { status } = await req.json()
 
-    const validStatuses = ['pending', 'processing', 'completed', 'cancelled', 'refunded']
-    
-    if (!validStatuses.includes(status)) {
+    if (!isValidOrderId(id)) {
       return NextResponse.json(
-        { error: 'وضعیت نامعتبر' },
+        {
+          error: 'شناسه سفارش نامعتبر است',
+        },
         { status: 400 }
       )
     }
 
-    const order = await prisma.order.update({
-      where: { id },
-      data: { status }
-    })
+    const orderId = id.trim()
 
-    return NextResponse.json(order)
-  } catch (error) {
-    console.error('Error updating order:', error)
-    return NextResponse.json(
-      { error: 'خطا در به‌روزرسانی سفارش' },
-      { status: 500 }
-    )
-  }
-}
+    const order =
+      await prisma.order.findUnique({
+        where: {
+          id: orderId,
+        },
+        select: {
+          id: true,
+          amount: true,
+          plan: true,
+          status: true,
+          authority: true,
+          paymentRefId: true,
+          paidAt: true,
+          createdAt: true,
+          updatedAt: true,
+          telegramId: true,
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const user = await getCurrentUser()
-    if (!user || user.role !== 'ADMIN') {
+          product: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+            },
+          },
+
+          user: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+            },
+          },
+        },
+      })
+
+    if (!order) {
       return NextResponse.json(
-        { error: 'دسترسی غیرمجاز' },
-        { status: 401 }
+        {
+          error: 'سفارش یافت نشد',
+        },
+        { status: 404 }
       )
     }
 
-    const { id } = await params
-    
-    await prisma.order.delete({
-      where: { id }
-    })
-
-    return NextResponse.json({ success: true })
+    return NextResponse.json(order)
   } catch (error) {
-    console.error('Error deleting order:', error)
+    console.error(
+      'GET /api/admin/orders/[id] error:',
+      error
+    )
+
     return NextResponse.json(
-      { error: 'خطا در حذف سفارش' },
+      {
+        error: 'خطا در دریافت اطلاعات سفارش',
+      },
       { status: 500 }
     )
   }

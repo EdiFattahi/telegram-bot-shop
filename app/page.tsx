@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
+import Image from 'next/image'
 import { 
   ArrowLeft, 
   Bot, 
@@ -11,8 +12,7 @@ import {
   Clock,
   Zap,
   ChevronLeft,
-  Star,
-  CheckCircle2
+  Star
 } from 'lucide-react'
 import NeuralNetwork from '@/components/neural-network'
 import TestimonialCarousel from '@/components/testimonial-carousel'
@@ -246,9 +246,11 @@ export default async function Home() {
                 >
                   <div className="h-40 bg-gradient-to-br from-blue-900/50 to-purple-900/50 flex items-center justify-center">
                     {product.imageUrl ? (
-                      <img 
-                        src={product.imageUrl} 
+                      <Image
+                        src={product.imageUrl}
                         alt={product.title}
+                        width={800}
+                        height={400}
                         className="w-full h-full object-cover"
                       />
                     ) : (

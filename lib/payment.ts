@@ -1,20 +1,19 @@
-import ZarinpalCheckout from 'zarinpal-checkout'
-
-const zarinpal = ZarinpalCheckout.create(
-  process.env.ZARINPAL_MERCHANT_ID!,
-  false // sandbox mode
-)
-
-export async function createPayment(amount: number, orderId: string) {
-  const response = await zarinpal.PaymentRequest({
-    Amount: amount,
-    CallbackURL: `${process.env.NEXTAUTH_URL}/api/payment/callback`,
-    Description: `پرداخت سفارش ${orderId}`,
-  })
-  
-  if (response.status === 100) {
-    return response.url
+/**
+ * تبدیل مبلغ از تومان به ریال
+ *
+ * تمام قیمت‌های داخلی سیستم در Database بر اساس تومان هستند.
+ * زرین‌پال مبلغ را بر اساس ریال دریافت می‌کند.
+ */
+export function tomanToRial(amountToman: number): number {
+  if (!Number.isInteger(amountToman) || amountToman <= 0) {
+    throw new Error('Invalid payment amount')
   }
-  
-  throw new Error('Payment request failed')
+
+  const amountRial = amountToman * 10
+
+  if (!Number.isSafeInteger(amountRial)) {
+    throw new Error('Payment amount exceeds safe integer range')
+  }
+
+  return amountRial
 }

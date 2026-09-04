@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
+import { } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { CheckCircle2, ArrowLeft, Sparkles, Zap, Shield } from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
 import Particles from '@/components/particles'
 
 export default function OrderWebsitePage() {

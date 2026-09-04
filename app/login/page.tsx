@@ -37,7 +37,7 @@ export default function LoginPage() {
 
       router.push('/admin')
       router.refresh()
-    } catch (error) {
+    } catch {
       setError('خطایی رخ داد. دوباره تلاش کنید')
     } finally {
       setLoading(false)

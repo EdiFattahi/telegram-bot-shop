@@ -1,10 +1,24 @@
-export default function AdminBlogPage() {
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">مدیریت وبلاگ</h1>
-      <p className="mt-2 text-muted-foreground">
-        بخش مدیریت وبلاگ در حال آماده‌سازی است.
-      </p>
-    </div>
-  )
+import { prisma } from '@/lib/prisma'
+import AdminBlogClient from './admin-blog-client'
+
+export default async function AdminBlogPage() {
+  const posts = await prisma.blogPost.findMany({
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+
+  const serializedPosts = posts.map((post) => ({
+    id: post.id,
+    slug: post.slug,
+    title: post.title,
+    content: post.content,
+    excerpt: post.excerpt,
+    coverImage: post.coverImage,
+    published: post.published,
+    createdAt: post.createdAt.toISOString(),
+    updatedAt: post.updatedAt.toISOString(),
+  }))
+
+  return <AdminBlogClient initialPosts={serializedPosts} />
 }

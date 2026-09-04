@@ -1,5 +1,5 @@
-import { Card, CardContent } from '@/components/ui/card'
-import { Users, Target, Award, Heart, Zap, Shield } from 'lucide-react'
+import {  } from '@/components/ui/card'
+import { Target, Award, Heart, Zap} from 'lucide-react'
 import Particles from '@/components/particles'
 
 export const metadata = {

@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowLeft, CheckCircle2, Sparkles } from 'lucide-react'
 
 export const metadata = {
@@ -47,9 +48,11 @@ export default async function ProductsPage() {
                 <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden">
                   <div className="relative">
                     {product.imageUrl ? (
-                      <img 
-                        src={product.imageUrl} 
+                      <Image
+                        src={product.imageUrl}
                         alt={product.title}
+                        width={800}
+                        height={400}
                         className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (

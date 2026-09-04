@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import { Button } from '@/components/ui/button'
+import Image from 'next/image'
 import {
   Card,
   CardContent,
@@ -233,9 +234,11 @@ export default async function ProductPage({
 
         {product.imageUrl && (
           <div className="mb-8 rounded-2xl overflow-hidden">
-            <img
+            <Image
               src={product.imageUrl}
               alt={product.title}
+              width={1200}
+              height={600}
               className="w-full h-64 md:h-96 object-cover"
             />
           </div>
